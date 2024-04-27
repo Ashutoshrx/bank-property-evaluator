@@ -8,6 +8,8 @@ import com.jarvis.bankevaluator.data.entity.User;
 import com.jarvis.bankevaluator.data.repository.UserRepository;
 import com.jarvis.bankevaluator.dto.LogInRequestDTO;
 import com.jarvis.bankevaluator.dto.RegistrationRequestDTO;
+import com.jarvis.bankevaluator.exception.BankingServiceBadCredentialsException;
+import com.jarvis.bankevaluator.exception.BankingServiceRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
+import static com.jarvis.bankevaluator.exception.errorMessages.SOMETHING_WENT_WRONG;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -46,7 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
               registrationRequest.getInitiatorName());
       return jwtService.generateToken(savedUser);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new BankingServiceRuntimeException(SOMETHING_WENT_WRONG + e.getMessage());
     }
   }
 
@@ -58,12 +60,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
               logInRequest.getPassword()));
       var user =
               userRepository.findByInitiatorName(
-                      logInRequest.getInitiatorName()).orElseThrow();
+                              logInRequest.getInitiatorName()).
+                      orElseThrow(() -> new BankingServiceBadCredentialsException("No User Found"));
       return jwtService.generateToken(user);
-    } catch (NoSuchElementException e) {
+    } catch (BankingServiceBadCredentialsException e) {
       throw e;
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new BankingServiceRuntimeException("Something went wrong: " + e.getMessage());
     }
   }
 
