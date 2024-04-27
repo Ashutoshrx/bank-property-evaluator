@@ -1,7 +1,6 @@
 package com.jarvis.bankevaluator.data.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,7 +16,6 @@ import java.util.List;
 //@Builder
 @Entity
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity<User> implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +30,13 @@ public class User extends BaseEntity<User> implements UserDetails {
   private boolean accountLocked;
   @Column(name = "enabled", nullable = false)
   private boolean enabled;
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "business_unit_id")
-  private List<BusinessUnit> businessUnits;
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "business_unit_id", nullable = false)
+  private BusinessUnit businessUnit;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return businessUnits.stream().map(businessUnit ->
-                    new SimpleGrantedAuthority(businessUnit.getBusinessUnit())).
-            toList();
+    return List.of(new SimpleGrantedAuthority(businessUnit.getBusinessUnit()));
   }
 
   @Override

@@ -20,9 +20,9 @@ public class ApplicationConfig {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return contactNumber ->
-            userRepository.findByContactNumber(contactNumber)
-                    .orElseThrow(() -> new UsernameNotFoundException("ContactNumber Not Found"));
+    return initiatorName ->
+            userRepository.findByInitiatorName(initiatorName)
+                    .orElseThrow(() -> new UsernameNotFoundException("InitiatorName Not Found"));
   }
 
   @Bean

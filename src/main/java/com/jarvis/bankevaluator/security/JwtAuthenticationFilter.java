@@ -9,6 +9,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,10 +23,11 @@ import java.io.IOException;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-  private final JwtService jwtService;
-  private final UserDetailsService userDetailsService;
+  @Autowired
+  private JwtService jwtService;
+  @Autowired
+  private  UserDetailsService userDetailsService;
 
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -36,15 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     final String authHeaders = request.getHeader(AUTHORIZATION);
     final String jwt;
-    final String contactNumber;
+    final String initiatorName;
     if (StringUtils.isEmpty(authHeaders) || !authHeaders.startsWith("Bearer ")) {
       filterChain.doFilter(request, response);
       return;
     }
     jwt = authHeaders.substring(7);
-    contactNumber = jwtService.extractInitiatorName(jwt);
-    if (ObjectUtils.isNotEmpty(contactNumber) && ObjectUtils.isEmpty(SecurityContextHolder.getContext().getAuthentication())) {
-      UserDetails userDetails = userDetailsService.loadUserByUsername(contactNumber);
+    initiatorName = jwtService.extractInitiatorName(jwt);
+    if (ObjectUtils.isNotEmpty(initiatorName) && ObjectUtils.isEmpty(SecurityContextHolder.getContext().getAuthentication())) {
+      UserDetails userDetails = userDetailsService.loadUserByUsername(initiatorName);
       if (jwtService.isTokenValid(jwt, userDetails)) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
                 userDetails.getAuthorities());

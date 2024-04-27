@@ -3,6 +3,7 @@ package com.jarvis.bankevaluator.business.service.impl;
 import com.jarvis.bankevaluator.business.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +54,7 @@ public class JwtServiceImpl implements JwtService {
     return Jwts.builder().claims(claims).subject(userDetails.getUsername()).
             issuedAt(new Date(System.currentTimeMillis())).
             expiration(new Date(System.currentTimeMillis() + jwtExpiration)).claim("BusinessUnit", businessUnits).
-            signWith(getSignInKey()).compact();
+            signWith(getSignInKey(), Jwts.SIG.HS256).compact();
   }
 
   /**
@@ -72,7 +73,8 @@ public class JwtServiceImpl implements JwtService {
   @Override
   public boolean isTokenValid(String token, UserDetails userDetails) {
     String initiatorName = extractInitiatorName(token);
-    return userDetails.getUsername().equalsIgnoreCase(initiatorName) && !isTokenExpired(token);
+    return userDetails.getUsername().equalsIgnoreCase(initiatorName);
+//    return userDetails.getUsername().equalsIgnoreCase(initiatorName) && !isTokenExpired(token);
   }
 
   /**

@@ -15,16 +15,10 @@ public interface UserMapper {
 
   @Mapping(target = "initiatorName", source = "initiatorName")
   @Mapping(target = "contactNumber", source = "contactNumber")
-  @Mapping(target = "businessUnits", source = "businessUnit", qualifiedByName = "mapBusinessUnit")
+  @Mapping(target = "enabled", expression = "java(true)")
+  @Mapping(target = "businessUnit", source = "businessUnit", qualifiedByName = "mapBusinessUnit")
   User mapToUser(RegistrationRequestDTO registrationRequest);
 
   @Named("mapBusinessUnit")
-  default List<BusinessUnit> mapBusinessUnit(String businessUnitInput) {
-    List<BusinessUnit> businessUnits = new ArrayList<>();
-    BusinessUnit businessUnit = new BusinessUnit();
-    businessUnit.setBusinessUnit(businessUnitInput);
-    businessUnits.add(businessUnit);
-    return businessUnits;
-
-  }
+  BusinessUnit mapBusinessUnit(String businessUnit);
 }

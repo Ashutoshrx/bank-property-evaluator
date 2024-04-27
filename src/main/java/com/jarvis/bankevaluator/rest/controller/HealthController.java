@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
   @GetMapping("/ping")
   private String ping() {
-    return "Hi";
+    return "Hi! I am coming from secured channel";
   }
 }
