@@ -11,4 +11,6 @@ public class LogInRequestDTO {
   private String initiatorName;
   @NotEmpty
   private String password;
+  @NotEmpty
+  private String contactNumber;
 }

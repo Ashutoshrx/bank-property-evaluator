@@ -11,5 +11,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
   Optional<User> findByInitiatorNameAndPassword(String initiatorName,String password);
 
   Optional<User> findByInitiatorName(String initiatorName);
+  Optional<User> findByContactNumber(String contactNumber);
 }
 

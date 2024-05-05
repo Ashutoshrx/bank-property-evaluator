@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin
 public class AuthenticationController {
   @Autowired
   private AuthenticationService authenticationService;

@@ -59,8 +59,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
               UsernamePasswordAuthenticationToken(logInRequest.getInitiatorName(),
               logInRequest.getPassword()));
       var user =
-              userRepository.findByInitiatorName(
-                              logInRequest.getInitiatorName()).
+              userRepository.findByContactNumber(
+                              logInRequest.getContactNumber()).
                       orElseThrow(() -> new BankingServiceBadCredentialsException("No User Found"));
       return jwtService.generateToken(user);
     } catch (BankingServiceBadCredentialsException e) {
